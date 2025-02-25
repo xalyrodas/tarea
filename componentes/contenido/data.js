@@ -1,26 +1,16 @@
-function createSection() { 
-    let section = document.createElement('section');
-    section.className = "section-1";
-    
-    for (let i = 1; i <= 13; i++) {
-        let div = document.createElement('div');
+function Data(){
+    const datos=[
+        "Drink 8 glasses of water",
+        "Meditate for 10 minutes",
+        "Read a chapter of a book",
+        "Go for a 30-minute walk",
+        "Write in a gratitude journal",
+        "Plan meals for the day",
+        "Practice deep breathing exercises",
+        "Stretch for 15 minutes",
+        "Limit screen time before bed"
+    ];
+    return datos;
 
-        if (i === 13) {
-            div.className = "div-special";
-            div.textContent = "Agregar Tarea";
-        } else {
-            div.className = `div-${i}`;
-            div.textContent = `Tarea: ${i}`;
-        }
-        
-        let innerDiv = document.createElement('div');
-        innerDiv.className = `inner-div-${i}`;
-        div.appendChild(innerDiv);
-        
-        section.appendChild(div);
-    }
-    
-    return section;
 }
-
-export { createSection };
+export{Data}

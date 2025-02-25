@@ -1,13 +1,6 @@
-import { createSection } from "./data.js";
-
-function initContainer() {
-    let container = document.createElement("div");
-    container.className = "container";
-
-    let section = createSection();
-    container.appendChild(section);
-
-    return container;
+ function contenido() {
+    let contenido = document.createElement("div");
+    contenido.className = "seccion_contenido";
+    return contenido;
 }
-
-export { initContainer };
+export{contenido}
