@@ -1,32 +1,36 @@
+// tarea.js
 import { contenido } from "./contenido.js"; 
-import { Data } from "./data.js"; 
+import { obtenerTareas } from "./data.js"; // Importar la nueva función para obtener tareas dinámicamente
 import { tacharCarta } from "./funcionescontenido.js"; 
 
+export async function cargarCarta() {
+    const seccionContenido = contenido(); // Crear la sección de contenido en la página
 
-export function cargarCarta() {
-    const datos = Data(); 
-    const seccionContenido = contenido(); 
+    try {
+        const tareas = await obtenerTareas(); // Obtener las tareas desde el backend
 
-    datos.forEach(item => {
-        const carta = document.createElement("div");
-        carta.className = "carta";
-        
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.className = "checkbox";
+        // Iterar sobre las tareas y agregarlas a la página
+        tareas.forEach(item => {
+            const carta = document.createElement("div");
+            carta.className = "carta";
 
-      
-        const texto = document.createElement("span");
-        texto.className = "texto";
-        texto.textContent = item;
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.className = "checkbox";
 
-        carta.appendChild(checkbox);
-        carta.appendChild(texto);
+            const texto = document.createElement("span");
+            texto.className = "texto";
+            texto.textContent = item.nombre_tarea; // Usar el nombre de la tarea desde la base de datos
 
-        tacharCarta(carta); 
+            carta.appendChild(checkbox);
+            carta.appendChild(texto);
+            tacharCarta(carta); // Aplicar la funcionalidad de marcar/desmarcar tarea
 
-        seccionContenido.appendChild(carta); 
-    });
+            seccionContenido.appendChild(carta); // Agregar la carta a la sección de contenido
+        });
+    } catch (error) {
+        console.error('Error al cargar las tareas:', error);
+    }
 
-    return seccionContenido; 
+    return seccionContenido; // Devolver la sección de contenido con las tareas cargadas
 }
