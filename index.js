@@ -1,49 +1,65 @@
 import { header } from "./componentes/header/header.js";
 import { cargarFormulario } from "./componentes/form/form.js"; 
 import { agregarTarea } from "./componentes/form/funcionform.js"; 
+import { cargarCarta } from "./componentes/contenido/tarea.js"; // Importar la función para cargar tareas
+import "./componentes/loging/login.js"; // Importar la lógica de autenticación
 
-function consultarTareasBackend() {
-    fetch('http://localhost:3000/tareas')  // Hacemos una solicitud GET al backend
-        .then(response => response.json())  // Convertimos la respuesta en formato JSON
-        .then(tareas => {
-            console.log("Tareas obtenidas:", tareas);
-            const seccionContenido = document.querySelector(".seccion_contenido");
-            seccionContenido.innerHTML = "";  // Limpiamos la sección de tareas antes de agregar nuevas
+function cargarHeaderYFormulario() {
+    const root = document.getElementById("root");
 
-            tareas.forEach(tarea => {  // Recorremos las tareas obtenidas
-                const carta = document.createElement("div");
-                carta.className = "carta";  // Establecemos la clase para cada tarea
+    // Agregar el header
+    root.appendChild(header());
 
-                const checkbox = document.createElement("input");
-                checkbox.type = "checkbox";
-                checkbox.className = "checkbox";
-                checkbox.checked = tarea.estado === "verdadero";  // Marcamos el checkbox si la tarea está completada
+    // Crear la sección de contenido
+    const seccionContenido = document.createElement("div");
+    seccionContenido.className = "seccion_contenido";
+    root.appendChild(seccionContenido);
 
-                const texto = document.createElement("span");
-                texto.className = "texto";
-                texto.textContent = tarea.nombre_tarea;  // Establecemos el texto de la tarea
+    // Agregar el formulario de agregar tareas
+    const formulario = cargarFormulario();
+    root.appendChild(formulario);
 
-                carta.appendChild(checkbox);  // Añadimos el checkbox a la carta
-                carta.appendChild(texto);  // Añadimos el texto a la carta
-                seccionContenido.appendChild(carta);  // Añadimos la carta a la sección de contenido
-            });
-        })
-        .catch(error => console.error("Error al obtener tareas:", error));  // Manejamos cualquier error
+    // Asociar la funcionalidad de agregar tareas
+    agregarTarea(formulario, seccionContenido);
+
+    // Cargar las tareas existentes usando cargarCarta
+    cargarCarta().then((seccionTareas) => {
+        seccionContenido.appendChild(seccionTareas);
+    });
 }
 
 function cargarDOM() {
     let DOM = document.getElementById("root");  // Obtenemos el elemento root en el DOM
-    DOM.appendChild(header());  // Añadimos el header a la página
 
-    const seccionContenido = document.createElement("div");
-    seccionContenido.className = "seccion_contenido";  // Creamos la sección de contenido donde se mostrarán las tareas
-    DOM.appendChild(seccionContenido);
+    // Verificar si el usuario está autenticado
+    const usuarioAutenticado = localStorage.getItem("usuarioAutenticado");
 
-    const formulario = cargarFormulario();  // Cargamos el formulario para agregar tareas
-    DOM.appendChild(formulario);  // Añadimos el formulario a la página
-    agregarTarea(formulario, seccionContenido);  // Asociamos la funcionalidad para agregar tareas
-
-    consultarTareasBackend();  // Cargamos las tareas desde el backend al inicio
+    if (!usuarioAutenticado) {
+        // Si no está autenticado, mostrar el formulario de login
+        const loginForm = document.createElement("div");
+        loginForm.innerHTML = `
+            <div id="login-form">
+                <h2>Login</h2>
+                <input type="text" id="login-username" placeholder="Usuario" required>
+                <input type="password" id="login-password" placeholder="Contraseña" required>
+                <button id="login-button">Entrar</button>
+                <a href="#" id="register-link">¿No tienes una cuenta? Regístrate</a>
+                <p id="error-message"></p>
+            </div>
+            <div id="register-form" style="display: none;">
+                <h2>Registro</h2>
+                <input type="text" id="register-username" placeholder="Usuario" required>
+                <input type="email" id="register-email" placeholder="Correo" required>
+                <input type="password" id="register-password" placeholder="Contraseña" required>
+                <button id="register-button">Guardar</button>
+                <p id="error-message"></p>
+            </div>
+        `;
+        DOM.appendChild(loginForm);
+    } else {
+        // Si está autenticado, cargar el header y el formulario de agregar tareas
+        cargarHeaderYFormulario();
+    }
 }
 
 cargarDOM();  // Llamamos a la función para cargar todo el DOM cuando se cargue la página
